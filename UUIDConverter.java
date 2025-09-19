@@ -11,6 +11,7 @@ public class UUIDConverter {
 
     private static final int BASE = BASE92.length;
     private static final int[] CHAR_TO_INDEX = new int[128];
+    private static final int MAX_LENGTH = 19;
 
     static {
         for (int i = 0; i < BASE; i++) {
@@ -39,7 +40,8 @@ public class UUIDConverter {
         longs[1] = ((msb & 0xFFFFFFFFL) << 16) | ((lsb & 0xFFFF000000000000L) >>> 48);
         longs[2] = lsb & 0xFFFFFFFFFFFFL;
 
-        StringBuilder sb = new StringBuilder();
+        char[] result = new char[MAX_LENGTH];
+        int index = MAX_LENGTH;
 
         while (longs[2] != 0) {
             long remainder = 0;
@@ -49,10 +51,10 @@ public class UUIDConverter {
                 longs[i] = cur / BASE;
                 remainder = cur % BASE;
             }
-            sb.append(BASE92[(int) remainder]);
+            result[--index] = BASE92[(int) remainder];
         }
 
-        return sb.reverse().toString();
+        return new String(result, index, MAX_LENGTH - index);
     }
 
     public static UUID decode(String str) {
